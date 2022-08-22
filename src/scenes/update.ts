@@ -1,0 +1,1 @@
+export const update: Phaser.Types.Scenes.SceneUpdateCallback = function (){}
