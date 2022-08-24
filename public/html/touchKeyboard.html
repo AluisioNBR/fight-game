@@ -1,0 +1,68 @@
+<style>
+  #keyboard-container {
+    width: 800px;
+    height: 450px;
+
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  button {
+    position: relative;
+    width: 5rem;
+    height: 5rem;
+
+    border-radius: 50%;
+    border: 1px solid #fdfdfd55;
+
+    color: #fdfdfd55;
+    font-size: 1.5rem;
+
+    background-color: #0002;
+  }
+
+  button:active {
+    opacity: .8;
+    border: 1px solid #fdfdfd;
+    color: #fdfdfd;
+  }
+
+  button#top {
+    top: 14.5rem;
+  }
+  
+  button#bottom {
+    left: -5rem;
+    top: 21.5rem;
+  }
+  
+  button#left {
+    left: 1rem;
+  }
+
+  button#right {
+    left: -6rem;
+  }
+  
+  button#left, button#right {
+    top: 18rem;
+  }
+</style>
+
+<div id="keyboard-container">
+  <button id="left">
+    ←
+  </button>
+  
+  <button id="top">
+    ↑
+  </button>
+  
+  <button id="bottom">
+    ↓
+  </button>
+  
+  <button id="right">
+    →
+  </button>
+</div>

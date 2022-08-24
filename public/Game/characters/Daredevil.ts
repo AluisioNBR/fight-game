@@ -24,8 +24,14 @@ export class Daredevil extends Phaser.GameObjects.Container {
   private daredevilState!: DaredevilState
 
   private Keyboard!: Phaser.Input.Keyboard.KeyboardPlugin
+  private touchGamepad!: Phaser.GameObjects.DOMElement
 
-  constructor(scene: Phaser.Scene, x: number, y: number){
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    touchGamepad: Phaser.GameObjects.DOMElement
+  ){
 		super(scene, x, y)
     
     this.radarSense = scene.add.sprite(
@@ -45,6 +51,7 @@ export class Daredevil extends Phaser.GameObjects.Container {
     this.add(this.daredevil)
 
     this.Keyboard = scene.input.keyboard
+    this.touchGamepad = touchGamepad
     scene.physics.add.existing(this)
 	}
 
@@ -68,25 +75,42 @@ export class Daredevil extends Phaser.GameObjects.Container {
         break;
 
       case DaredevilState.Stand:
-        this.Keyboard.on('keydown-W', () => this.jump(this.getCrouchDirection()))
-
-        this.Keyboard.on('keydown-A', () => {
+        const daredevilJump = () => this.jump(this.getCrouchDirection())
+        const daredevilToLeft = () => {
           this.move(
             -300,
             Direction.Left,
             AnimationKeys.DaredevilRunLeft
           )
-        })
-        this.Keyboard.on('keydown-D', () => {
+        }
+        const daredevilToRight = () => {
           this.move(
             300,
             Direction.Right,
             AnimationKeys.DaredevilRunRight
           )
-        })
+        }
+        const daredevilStopMove = () => this.stopMove(body)
+
+        this.Keyboard.on('keydown-W', daredevilJump)
+        this.touchGamepad.getChildByID('top')
+        .addEventListener('mousedown', daredevilJump)
+
+        this.Keyboard.on('keydown-A', daredevilToLeft)
+        this.touchGamepad.getChildByID('left')
+        .addEventListener('click', daredevilToLeft)
+
+        this.Keyboard.on('keydown-D', daredevilToRight)
+        this.touchGamepad.getChildByID('right')
+        .addEventListener('click', daredevilToRight)
         
-        this.Keyboard.on('keyup-A', () => this.stopMove(body))
-        this.Keyboard.on('keyup-D', () =>this.stopMove(body))
+        this.Keyboard.on('keyup-A', daredevilStopMove)
+        this.touchGamepad.getChildByID('left')
+        .addEventListener('mouseup', daredevilStopMove)
+
+        this.Keyboard.on('keyup-D', daredevilStopMove)
+        this.touchGamepad.getChildByID('right')
+        .addEventListener('mouseup', daredevilStopMove)
         break;
       
       case DaredevilState.Jump:

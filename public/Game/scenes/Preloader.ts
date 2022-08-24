@@ -20,6 +20,11 @@ export class Preloader extends Phaser.Scene {
       '/assets/characters/daredevil.png',
       '/assets/characters/daredevil.json'
     )
+
+    this.load.html(
+      TextureKeys.TouchGamepad,
+      '/html/touchKeyboard.html'
+    )
   }
 
   create(){

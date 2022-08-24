@@ -5,8 +5,9 @@ import { SceneKeys } from "../consts/SceneKeys";
 import { Daredevil } from "../characters/Daredevil";
 import { TextureKeys } from "../consts/TextureKeys";
 
-export class Game extends Phaser.Scene {
+export class GameScene extends Phaser.Scene {
   private daredevil!: Daredevil
+  private touchGamepad!: Phaser.GameObjects.DOMElement
   constructor(){
     super(SceneKeys.Game)
   }
@@ -21,8 +22,16 @@ export class Game extends Phaser.Scene {
     )
     .setOrigin(0, 0)
     .setScrollFactor(0, 0)
+
+    this.touchGamepad = this.add.dom(400, 225)
+    .createFromCache(TextureKeys.TouchGamepad)
     
-    this.daredevil = new Daredevil(this, width * 0.1, height -30)
+    this.daredevil = new Daredevil(
+      this,
+      width * 0.1,
+      height -30,
+      this.touchGamepad
+    )
     const body = this.daredevil.body as Phaser.Physics.Arcade.Body
     body.setCollideWorldBounds(true)
     
