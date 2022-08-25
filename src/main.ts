@@ -1,4 +1,4 @@
-import Phaser, { Game } from 'phaser'
+import * as Phaser from 'phaser'
 
 import { Preloader } from './scenes/Preloader'
 import { GameScene } from './scenes/Game'
@@ -6,6 +6,7 @@ import { GameScene } from './scenes/Game'
 const gameContainer = document.getElementById('game-container') as HTMLElement
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
+  title: 'Fight Game',
   type: Phaser.AUTO,
   parent: gameContainer,
   width: 800,
@@ -23,4 +24,5 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   scene: [Preloader, GameScene]
 }
 
-const game = new Game(gameConfig)
+export const game = new Phaser.Game(gameConfig)
+

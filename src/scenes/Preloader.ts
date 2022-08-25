@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+import * as Phaser from 'phaser'
 
 import { SceneKeys } from '../consts/SceneKeys'
 import { TextureKeys } from '../consts/TextureKeys'
@@ -12,18 +12,18 @@ export class Preloader extends Phaser.Scene {
   preload(){
     this.load.image(
       TextureKeys.Background,
-      '/assets/backgrounds/background.jpg'
+      '../assets/backgrounds/background.jpg'
     )
 
     this.load.atlas(
       TextureKeys.Daredevil,
-      '/assets/characters/daredevil.png',
-      '/assets/characters/daredevil.json'
+      '../assets/characters/daredevil.png',
+      '../assets/characters/daredevil.json'
     )
 
     this.load.html(
       TextureKeys.TouchGamepad,
-      '/html/touchKeyboard.html'
+      '../assets/html/touchKeyboard.html'
     )
   }
 

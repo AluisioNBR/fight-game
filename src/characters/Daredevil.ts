@@ -1,4 +1,4 @@
-import Phaser from "phaser"
+import * as Phaser from "phaser"
 
 import { TextureKeys } from '../consts/TextureKeys'
 import { AnimationKeys } from '../consts/AnimationKeys'
