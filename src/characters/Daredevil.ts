@@ -3,6 +3,8 @@ import * as Phaser from "phaser"
 import { TextureKeys } from '../consts/TextureKeys'
 import { AnimationKeys } from '../consts/AnimationKeys'
 
+import { Gamepad } from "../gamepads"
+
 enum DaredevilState {
   Intro,
   IntroJump,
@@ -25,12 +27,14 @@ export class Daredevil extends Phaser.GameObjects.Container {
 
   private Keyboard!: Phaser.Input.Keyboard.KeyboardPlugin
   private touchGamepad!: Phaser.GameObjects.DOMElement
+  private Gamepad!: Gamepad
 
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
-    touchGamepad: Phaser.GameObjects.DOMElement
+    touchGamepad: Phaser.GameObjects.DOMElement,
+    gamepad: Gamepad
   ){
 		super(scene, x, y)
     
@@ -52,6 +56,8 @@ export class Daredevil extends Phaser.GameObjects.Container {
 
     this.Keyboard = scene.input.keyboard
     this.touchGamepad = touchGamepad
+    this.Gamepad = gamepad
+
     scene.physics.add.existing(this)
 	}
 
@@ -111,6 +117,14 @@ export class Daredevil extends Phaser.GameObjects.Container {
         this.Keyboard.on('keyup-D', daredevilStopMove)
         this.touchGamepad.getChildByID('right')
         .addEventListener('mouseup', daredevilStopMove)
+
+        if(this.Gamepad.connected)
+          this.gamepadInputs({
+            daredevilJump,
+            daredevilToLeft,
+            daredevilToRight,
+            daredevilStopMove
+          })
         break;
       
       case DaredevilState.Jump:
@@ -136,6 +150,36 @@ export class Daredevil extends Phaser.GameObjects.Container {
       default:
         break;
     }
+  }
+
+  private gamepadInputs(
+    listeners: {
+      daredevilJump: () => void,
+      daredevilToLeft: () => void,
+      daredevilToRight: () => void,
+      daredevilStopMove: () => void
+    }){
+    const isJump = this.Gamepad.getKey('dup') == 1 || this.Gamepad.getKey('leftstick_y') <= -0.5
+    const isMoveLeft = this.Gamepad.getKey('dleft') == 1 || this.Gamepad.getKey('leftstick_x') <= -0.5
+    const isMoveRight = this.Gamepad.getKey('dright') == 1 || this.Gamepad.getKey('leftstick_x') >= 0.5
+    const isNotMove = (
+      this.Gamepad.getKey('dleft') == 0 &&
+      this.Gamepad.getKey('dright') == 0 &&
+      this.Gamepad.getKey('leftstick_x') > -0.5 &&
+      this.Gamepad.getKey('leftstick_x') < 0.5
+    )
+    
+    if(isJump)
+      listeners.daredevilJump()
+
+    if(isMoveLeft)
+      listeners.daredevilToLeft()
+
+    if(isMoveRight)
+      listeners.daredevilToRight()
+
+    if(isNotMove)
+      listeners.daredevilStopMove()
   }
 
   private move(
