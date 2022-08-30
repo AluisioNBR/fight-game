@@ -1,8 +1,5 @@
 <style>
   #keyboard-container {
-    width: 800px;
-    height: 450px;
-
     display: flex;
     justify-content: flex-start;
   }
@@ -28,12 +25,12 @@
   }
 
   button#top {
-    top: 14.5rem;
+    top: 12.5rem;
   }
   
   button#bottom {
     left: -5rem;
-    top: 21.5rem;
+    top: 19.5rem;
   }
   
   button#left {
@@ -45,7 +42,35 @@
   }
   
   button#left, button#right {
-    top: 18rem;
+    top: 16rem;
+  }
+
+  @media(max-width: 800px){
+    button {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    button#top {
+      top: 10.5rem;
+    }
+    
+    button#bottom {
+      left: -2.5rem;
+      top: 13.5rem;
+    }
+
+    button#left {
+      left: .2rem;
+    }
+
+    button#right {
+      left: -2.8rem;
+    }
+
+    button#left, button#right {
+      top: 12rem;
+    }
   }
 </style>
 

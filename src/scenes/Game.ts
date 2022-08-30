@@ -13,7 +13,9 @@ enum Fullscreen {
 }
 
 export class GameScene extends Phaser.Scene {
+  private deviceWidth = window.screen.width
   private FullscreenState = Fullscreen.Disabled
+  private fullscreenButton!: Phaser.GameObjects.DOMElement
   private Background!: Phaser.GameObjects.Image
   private daredevil!: Daredevil
   private touchGamepad!: Phaser.GameObjects.DOMElement
@@ -34,6 +36,8 @@ export class GameScene extends Phaser.Scene {
     .setOrigin(0, 0)
     .setScrollFactor(0, 0)
 
+    document.addEventListener('resize', () => this.resizeGame())
+
     window.addEventListener("gamepadconnected", (event) => {
       this.Gamepad1.connect(event)
       this.showGamepadMessage(
@@ -48,13 +52,20 @@ export class GameScene extends Phaser.Scene {
       )
     })
 
-    this.add.dom(790, 10)
-    .createFromCache(TextureKeys.FullscreenButton)
-    .addListener('click')
-    .on('click', this.toggleFullscreen)
+    this.Gamepad1.addListener('press', 'select', () => this.toggleFullscreen())
 
-    this.touchGamepad = this.add.dom(400, 225)
+    this.fullscreenButton = this.add.dom(this.Background.width - 10, 10)
+    this.fullscreenButton
+    .createFromCache(TextureKeys.FullscreenButton)
+    .getChildByID('fullscreen-button')
+    .addEventListener('click', () => this.toggleFullscreen())
+
+    this.touchGamepad = this.add.dom(10, 10)
+    .setOrigin(0, 0)
     .createFromCache(TextureKeys.TouchGamepad)
+
+    if(this.deviceWidth > 800)
+      this.touchGamepad.setVisible(false)
     
     this.daredevil = new Daredevil(
       this,
@@ -97,24 +108,7 @@ export class GameScene extends Phaser.Scene {
   update(){
     this.Gamepad1.update()
 
-    if(this.Gamepad1.getKey('select') == 1)
-      this.toggleFullscreen()
-
-    if(this.scale.isFullscreen){
-      this.Background.setScale(1.8, 1.7)
-      this.game.scale.resize(1.8, 1.7)
-    }
-    else {
-      this.Background.setScale(1, 1)
-      this.game.scale.resize(1, 1)
-    }
-
-    this.physics.world.setBounds(
-      this.Background.scaleX,
-      this.Background.scaleY,
-      this.game.scale.width,
-      this.game.scale.height
-    )
+    this.resizeGame()
   }
 
   toggleFullscreen(){
@@ -127,5 +121,42 @@ export class GameScene extends Phaser.Scene {
       document.exitFullscreen()
       this.FullscreenState = Fullscreen.Disabled
     }
+  }
+
+  private resizeGame() {
+    let orientation: unknown = this.scale.orientation
+    orientation = orientation as string
+    
+    if(this.scale.isFullscreen && this.deviceWidth >= 800){
+      this.Background.setScale(1.8, 1.7)
+      this.game.scale.resize(1.8, 1.7)
+    }
+
+    else if(this.deviceWidth >= 800 || orientation == 'landscape-primary'){
+      this.Background.setScale(1.2, 1)
+      this.game.scale.resize(1.2, 1)
+    }
+
+    else if(this.scale.isFullscreen && this.deviceWidth < 800){
+      this.Background.setScale(1.2, 1)
+      this.game.scale.resize(1.2, 1)
+    }
+
+    else if(this.deviceWidth < 800){
+      this.Background.setScale(0.6, 0.6)
+      this.game.scale.resize(0.6, 0.6)
+    }
+
+    else {
+      this.Background.setScale(1, 1)
+      this.game.scale.resize(1, 1)
+    }
+
+    this.physics.world.setBounds(
+      this.Background.scaleX,
+      this.Background.scaleY,
+      this.game.scale.width,
+      this.game.scale.height
+    )
   }
 }

@@ -2,7 +2,6 @@ import * as Phaser from 'phaser'
 
 import { Preloader } from './scenes/Preloader'
 import { GameScene } from './scenes/Game'
-import { SceneKeys } from './consts/SceneKeys'
 
 const gameContainer = document.getElementById('game-container') as HTMLElement
 
