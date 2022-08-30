@@ -1,6 +1,5 @@
 export enum AnimationKeys {
 	DaredevilIntro = 'daredevil-intro',
-	DaredevilIntroJump = 'daredevil-intro-jump',
 
 	DaredevilStandLeft = 'daredevil-stand-left',
 	DaredevilStandRight = 'daredevil-stand-right',

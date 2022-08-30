@@ -1,4 +1,12 @@
+import type {
+  GamepadKey,
+  GamepadTypeEvent,
+  GamepadEventListenerCallback,
+  GamepadEventListener
+} from './gamepads.type'
+
 class Gamepad {
+  private eventListeners: GamepadEventListener[] = []
   private buttons = {
     'a': 0,
     'b': 0,
@@ -21,7 +29,7 @@ class Gamepad {
     'rightstick_x': 0,
     'rightstick_y': 0,
   }
-  connected = false
+  public connected = false
 
   constructor() {
     window.addEventListener("gamepadconnected", this.connect.bind(this));
@@ -29,17 +37,10 @@ class Gamepad {
   }
   
   connect(event: GamepadEvent) {
-    console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
-    event.gamepad.index, event.gamepad.id,
-    event.gamepad.buttons.length, event.gamepad.axes.length);
-    
     this.connected = true;
   }
   
   disconnect(event: GamepadEvent) {
-    console.log("Gamepad disconnected from index %d: %s",
-    event.gamepad.index, event.gamepad.id);
-    
     this.connected = false;
   }
   
@@ -68,9 +69,25 @@ class Gamepad {
       this.buttons['rightstick_x'] = gamepad.axes[2];
       this.buttons['rightstick_y'] = gamepad.axes[3];
     }
+
+    for (const eventListener of this.eventListeners) {
+      if(this.isGamepadPressEvent(eventListener))
+        eventListener.callback({ event: eventListener.event, key: eventListener.key })
+      
+      else if(this.isGamepadChangeEvent(eventListener))
+        eventListener.callback({ event: eventListener.event, key: eventListener.key })
+    }
+  }
+
+  private isGamepadPressEvent(eventListener: GamepadEventListener){
+    return eventListener.event == 'press' && this.buttons[eventListener.key] != 0
+  }
+
+  private isGamepadChangeEvent(eventListener: GamepadEventListener){
+    return eventListener.event == 'change' && (this.buttons[eventListener.key] > 0 || this.buttons[eventListener.key] < 0)
   }
   
-  getKey(key: GamepadKeyButton): number {
+  getKey(key: GamepadKey): number {
     if (this.connected) {
       return this.buttons[key];
     }
@@ -78,8 +95,25 @@ class Gamepad {
       return 0;
     }
   }
-}
 
-type GamepadKeyButton = 'a' | 'b' | 'x' | 'y' | 'rb' | 'lb' | 'rt' | 'lt' | 'rs' | 'ls' | 'start' | 'select' | 'dup' | 'ddown' | 'dleft' | 'dright' | 'leftstick_x' | 'leftstick_y' | 'rightstick_x' | 'rightstick_y'
+  addListener(event: GamepadTypeEvent, key: GamepadKey, callback: GamepadEventListenerCallback){
+    let exists = false
+    for (const eventListener of this.eventListeners) {
+      if(this.isEventKeyExists(eventListener, event, key))
+        exists = true
+    }
+
+    if(!exists)
+      this.eventListeners.push({
+        event: event,
+        key: key,
+        callback: callback
+      })
+  }
+
+  isEventKeyExists(eventListener: GamepadEventListener, event: GamepadTypeEvent, key: GamepadKey){
+    return eventListener.event == event && eventListener.key == key
+  }
+}
 
 export { Gamepad }

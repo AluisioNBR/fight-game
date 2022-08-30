@@ -22,6 +22,11 @@ export class Preloader extends Phaser.Scene {
     )
 
     this.load.html(
+      TextureKeys.FullscreenButton,
+      '../assets/html/fullscreenButton.html'
+    )
+
+    this.load.html(
       TextureKeys.TouchGamepad,
       '../assets/html/touchKeyboard.html'
     )
@@ -46,14 +51,6 @@ export class Preloader extends Phaser.Scene {
       duration: 20000,
       frameRate: 10,
       repeat: 0
-    })
-    
-    this.anims.create({
-      key: AnimationKeys.DaredevilIntroJump,
-      frames: [{
-        key: TextureKeys.Daredevil,
-        frame: 'intro_jump.png'
-      }]
     })
 
     this.anims.create({
