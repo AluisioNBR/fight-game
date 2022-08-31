@@ -1,4 +1,4 @@
-type GamepadKey = 'a' | 'b' | 'x' | 'y' | 'rb' | 'lb' | 'rt' | 'lt' | 'rs' | 'ls' | 'start' | 'select' | 'dup' | 'ddown' | 'dleft' | 'dright' | 'leftstick_x' | 'leftstick_y' | 'rightstick_x' | 'rightstick_y'
+type GamepadKey = 'a' | 'b' | 'x' | 'y' | 'r1' | 'l1' | 'r2' | 'l2' | 'r3' | 'l3' | 'start' | 'select' | 'dup' | 'ddown' | 'dleft' | 'dright' | 'leftstick_x' | 'leftstick_y' | 'rightstick_x' | 'rightstick_y'
 
 type GamepadTypeEvent = 'press' | 'change'
 

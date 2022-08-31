@@ -5,7 +5,6 @@ import { AnimationKeys } from '../consts/AnimationKeys'
 
 import { Gamepad } from "../gamepads"
 
-import type { DaredevilInputListeners } from './Daredevil.types'
 import {
   CharacterState,
   CharacterDirection,
@@ -13,9 +12,9 @@ import {
 
 export class Daredevil extends Phaser.GameObjects.Container {
   private daredevil: Phaser.GameObjects.Sprite
-  private daredevilDirection!: CharacterDirection
 	private radarSense: Phaser.GameObjects.Sprite
   private daredevilState!: CharacterState
+  private daredevilDirection!: CharacterDirection
 
   private Keyboard!: Phaser.Input.Keyboard.KeyboardPlugin
   private touchGamepad!: Phaser.GameObjects.DOMElement
@@ -125,68 +124,77 @@ export class Daredevil extends Phaser.GameObjects.Container {
   }
 
   private activeKeyboardInputs() {
-    const {
-      daredevilJump,
-      daredevilToLeft,
-      daredevilToRight,
-      daredevilStopMove
-    } = this.getActionsCallbacks()
+    const callbacks = this.getActionsCallbacks()
     
-    this.Keyboard.on('keydown-W', daredevilJump)
-    this.Keyboard.on('keydown-A', daredevilToLeft)
-    this.Keyboard.on('keydown-D', daredevilToRight)
+    this.Keyboard.on('keydown-W', callbacks.daredevilJump)
+    this.Keyboard.on('keydown-A', callbacks.daredevilToLeft)
+    this.Keyboard.on('keydown-D', callbacks.daredevilToRight)
+    this.Keyboard.on('keydown-Q', () => this.guard())
+    this.Keyboard.on('keydown-E', () => this.radarModeOn())
 
-    this.Keyboard.on('keyup-A', daredevilStopMove)
-    this.Keyboard.on('keyup-D', daredevilStopMove)
+    this.Keyboard.on('keyup-A', callbacks.daredevilStopMove)
+    this.Keyboard.on('keyup-D', callbacks.daredevilStopMove)
+    this.Keyboard.on('keyup-Q', callbacks.daredevilStopMove)
+    this.Keyboard.on('keyup-E', () => this.radarModeOff())
   }
 
   private activeTouchInputs() {
-    const {
-      daredevilJump,
-      daredevilToLeft,
-      daredevilToRight,
-      daredevilStopMove
-    } = this.getActionsCallbacks()
+    const callbacks = this.getActionsCallbacks()
     
     this.touchGamepad.getChildByID('top')
-    .addEventListener('mousedown', daredevilJump)
+    .addEventListener('pointerdown', callbacks.daredevilJump)
     this.touchGamepad.getChildByID('left')
-    .addEventListener('click', daredevilToLeft)
+    .addEventListener('pointerdown', callbacks.daredevilToLeft)
     this.touchGamepad.getChildByID('right')
-    .addEventListener('click', daredevilToRight)
+    .addEventListener('pointerdown', callbacks.daredevilToRight)
     
     this.touchGamepad.getChildByID('left')
-    .addEventListener('mouseup', daredevilStopMove)
+    .addEventListener('pointerup', callbacks.daredevilStopMove)
     this.touchGamepad.getChildByID('right')
-    .addEventListener('mouseup', daredevilStopMove)
+    .addEventListener('pointerup', callbacks.daredevilStopMove)
+    
+    this.touchGamepad.getChildByID('guard')
+    .addEventListener('pointerdown', () => this.guard())
+    this.touchGamepad.getChildByID('charge')
+    .addEventListener('pointerdown', () => this.radarModeOn())
+    
+    this.touchGamepad.getChildByID('guard')
+    .addEventListener('pointerup', callbacks.daredevilStopMove)
+    this.touchGamepad.getChildByID('charge')
+    .addEventListener('pointerup', () => this.radarModeOff())
   }
 
   private activeGamepadInputs(){
-    const {
-      daredevilJump,
-      daredevilToLeft,
-      daredevilToRight,
-      daredevilStopMove
-    } = this.getActionsCallbacks()
+    const callbacks = this.getActionsCallbacks()
 
-    this.Gamepad.addListener('press', 'dup', daredevilJump)
+    this.Gamepad.addListener('press', 'dup', callbacks.daredevilJump)
     this.Gamepad.addListener('change', 'leftstick_y', () => {
       if(this.Gamepad.getKey('leftstick_y') <= -0.25)
-        daredevilJump()
+        callbacks.daredevilJump()
     })
 
-    this.Gamepad.addListener('press', 'dleft', daredevilToLeft)
-    this.Gamepad.addListener('press', 'dright', daredevilToRight)
+    this.Gamepad.addListener('press', 'dleft', callbacks.daredevilToLeft)
+    this.Gamepad.addListener('press', 'dright', callbacks.daredevilToRight)
     this.Gamepad.addListener('change', 'leftstick_x', () => {
       if(this.Gamepad.getKey('leftstick_x') <= -0.25)
-        daredevilToLeft()
+        callbacks.daredevilToLeft()
 
       else if(this.Gamepad.getKey('leftstick_x') >= 0.25)
-        daredevilToRight()
+        callbacks.daredevilToRight()
+      
+      else
+        callbacks.daredevilStopMove()
     })
+
+    this.Gamepad.addListener('press', 'l1', () => this.guard())
+    this.Gamepad.addListener('press', 'r1', () => this.radarModeOn())
+
+
+    if(this.Gamepad.getKey('dleft') == 0 || this.Gamepad.getKey('dright') == 0 || this.Gamepad.getKey('l1') == 0)
+      callbacks.daredevilStopMove()
     
-    if(this.isNotMove())
-      daredevilStopMove()
+    if(this.Gamepad.getKey('r1') == 0)
+      this.radarModeOff()
   }
 
   private daredevilCrouch() {
@@ -197,8 +205,6 @@ export class Daredevil extends Phaser.GameObjects.Container {
   }
 
   private getActionsCallbacks() {
-    const body = this.body as Phaser.Physics.Arcade.Body
-
     const daredevilJump = () => this.jump(this.getCrouchDirection())
     const daredevilToLeft = () => {
       this.move(
@@ -214,7 +220,7 @@ export class Daredevil extends Phaser.GameObjects.Container {
         AnimationKeys.DaredevilRunRight
       )
     }
-    const daredevilStopMove = () => this.stopMove(body)
+    const daredevilStopMove = () => this.stopMove()
     
     return {
       daredevilJump,
@@ -238,20 +244,12 @@ export class Daredevil extends Phaser.GameObjects.Container {
       this.daredevil.play(animation, true)
   }
 
-  private stopMove(body: Phaser.Physics.Arcade.Body){
+  private stopMove(){
+    const body = this.body as Phaser.Physics.Arcade.Body
     body.setVelocityX(0)
 
     if(body.blocked.down)
       this.daredevil.play(this.getStandDirection(), true)
-  }
-
-  private isNotMove(){
-    return (
-      this.Gamepad.getKey('dleft') == 0 &&
-      this.Gamepad.getKey('dright') == 0 &&
-      this.Gamepad.getKey('leftstick_x') > -0.25 &&
-      this.Gamepad.getKey('leftstick_x') < 0.25
-    )
   }
   
   private crouch(){
@@ -274,15 +272,41 @@ export class Daredevil extends Phaser.GameObjects.Container {
 
     setTimeout(() => body.setAccelerationY(0), 1000)
   }
-  
-  private getJumpDirection(){
-    return this.daredevilDirection == CharacterDirection.Left ?
-    AnimationKeys.DaredevilJumpLeft: AnimationKeys.DaredevilJumpRight
+
+  private guard() {
+    const body = this.body as Phaser.Physics.Arcade.Body
+    body.setVelocityX(0)
+
+    if(!body.blocked.down)
+      this.daredevil.play(this.getJumpGuardDirection(), true)
+    else
+      this.daredevil.play(this.getGuardDirection(), true)
+  }
+
+  private radarModeOn() {
+    const body = this.body as Phaser.Physics.Arcade.Body
+
+    if(body.blocked.down) {
+      body.setVelocityX(0)
+      
+      this.daredevil.play(this.getRadarmodeDirection(), true)
+      this.setRadarSenseEnableTo(true)
+    }
+  }
+
+  private radarModeOff() {
+    this.daredevil.play(this.getStandDirection(), true)
+    this.setRadarSenseEnableTo(false)
   }
 
   private getStandDirection(){
     return this.daredevilDirection == CharacterDirection.Left ?
     AnimationKeys.DaredevilStandLeft: AnimationKeys.DaredevilStandRight
+  }
+  
+  private getJumpDirection(){
+    return this.daredevilDirection == CharacterDirection.Left ?
+    AnimationKeys.DaredevilJumpLeft: AnimationKeys.DaredevilJumpRight
   }
   
   private getCrouchDirection(){
@@ -293,6 +317,21 @@ export class Daredevil extends Phaser.GameObjects.Container {
   private getFallDirection(){
     return this.daredevilDirection == CharacterDirection.Left ?
     AnimationKeys.DaredevilFallLeft: AnimationKeys.DaredevilFallRight
+  }
+
+  private getGuardDirection() {
+    return this.daredevilDirection == CharacterDirection.Left ?
+    AnimationKeys.DaredevilGuardLeft: AnimationKeys.DaredevilGuardRight
+  }
+  
+  private getJumpGuardDirection() {
+    return this.daredevilDirection == CharacterDirection.Left ?
+    AnimationKeys.DaredevilJumpGuardLeft: AnimationKeys.DaredevilJumpGuardRight
+  }
+
+  private getRadarmodeDirection(){
+    return this.daredevilDirection == CharacterDirection.Left ?
+    AnimationKeys.DaredevilRadarmodeOnLeft: AnimationKeys.DaredevilRadarmodeOnRight
   }
 
   private checkIfHaveReachedHaximumHeight(){

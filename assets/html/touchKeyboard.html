@@ -6,88 +6,101 @@
 
   button {
     position: relative;
+    z-index: 5;
+  }
+
+  .touchButton {
+    background: #0000;
+    opacity: .6;
+  }
+  
+  .touchButton:active {
+    opacity: .8;
+  }
+
+  .touchButton img {
+    position: relative;
     width: 5rem;
     height: 5rem;
-
-    border-radius: 50%;
-    border: 1px solid #fdfdfd55;
-
-    color: #fdfdfd55;
-    font-size: 1.5rem;
-
-    background-color: #0002;
+    z-index: -5;
   }
 
-  button:active {
-    opacity: .8;
-    border: 1px solid #fdfdfd;
-    color: #fdfdfd;
+  .touchButton#guard, .touchButton#charge {
+    top: 6rem;
   }
 
-  button#top {
-    top: 12.5rem;
+  .touchButton#charge {
+    left: 6.5rem;
+  }
+
+  .touchButton#top {
+    top: 14rem;
+    left: -12rem;
   }
   
-  button#bottom {
-    left: -5rem;
+  .touchButton#left {
+    left: -12rem;
+  }
+
+  .touchButton#bottom, .touchButton#right {
+    left: -18rem;
+  }
+  
+  .touchButton#bottom, .touchButton#left, .touchButton#right {
     top: 19.5rem;
-  }
-  
-  button#left {
-    left: 1rem;
-  }
-
-  button#right {
-    left: -6rem;
-  }
-  
-  button#left, button#right {
-    top: 16rem;
   }
 
   @media(max-width: 800px){
-    button {
+    .touchButton img {
       width: 2.5rem;
       height: 2.5rem;
     }
 
-    button#top {
+    .touchButton#charge {
+      left: 4rem;
+    }
+
+    .touchButton#top {
       top: 10.5rem;
+      left: -7rem;
     }
-    
-    button#bottom {
-      left: -2.5rem;
+
+    .touchButton#left {
+      left: -7rem;
+    }
+
+    .touchButton#bottom, .touchButton#right {
+      left: -10.5rem;
+    }
+
+    .touchButton#bottom, .touchButton#left, .touchButton#right {
       top: 13.5rem;
-    }
-
-    button#left {
-      left: .2rem;
-    }
-
-    button#right {
-      left: -2.8rem;
-    }
-
-    button#left, button#right {
-      top: 12rem;
     }
   }
 </style>
 
 <div id="keyboard-container">
-  <button id="left">
-    ←
+  <button id="guard" class="touchButton">
+    <img src="/assets/buttons/q-icon.svg" alt="Q button">
+  </button>
+
+  <button id="charge" class="touchButton">
+    <img src="/assets/buttons/e-icon.svg" alt="E button">
+  </button>
+
+  <button id="left" class="touchButton">
+    <img src="/assets/buttons/a-icon.svg" alt="A button">
   </button>
   
-  <button id="top">
-    ↑
+  <button id="top" class="touchButton">
+    <img src="/assets/buttons/w-icon.svg" alt="W button">
   </button>
   
-  <button id="bottom">
-    ↓
+  <button id="bottom" class="touchButton">
+    <img src="/assets/buttons/s-icon.svg" alt="S button">
   </button>
   
-  <button id="right">
-    →
+  <button id="right" class="touchButton">
+    <img src="/assets/buttons/d-icon.svg" alt="D button">
   </button>
 </div>

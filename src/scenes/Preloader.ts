@@ -160,6 +160,86 @@ export class Preloader extends Phaser.Scene {
     })
 
     this.anims.create({
+      key: AnimationKeys.DaredevilGuardLeft,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'left_guard.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilGuardRight,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'right_guard.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilGuardActiveLeft,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'left_guard_active.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilGuardActiveRight,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'right_guard_active.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilJumpGuardLeft,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'left_jump_guard.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilJumpGuardRight,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'right_jump_guard.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilJumpGuardActiveLeft,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'left_jump_guard_active.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilJumpGuardActiveRight,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'right_jump_guard_active.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilRadarmodeOnLeft,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'left_radarmode.png'
+			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilRadarmodeOnRight,
+      frames: [{
+				key: TextureKeys.Daredevil,
+				frame: 'right_radarmode.png'
+			}]
+    })
+
+    this.anims.create({
       key: AnimationKeys.DaredevilRadarSense,
       frames: this.anims.generateFrameNames(TextureKeys.Daredevil, {
         start: 0,
