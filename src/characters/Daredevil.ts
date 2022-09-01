@@ -16,6 +16,7 @@ export class Daredevil extends Phaser.GameObjects.Container {
   private daredevilState!: CharacterState
   private daredevilDirection!: CharacterDirection
 
+  private touchAndKeyboardIsActive = false
   private Keyboard!: Phaser.Input.Keyboard.KeyboardPlugin
   private touchGamepad!: Phaser.GameObjects.DOMElement
   private Gamepad!: Gamepad
@@ -94,22 +95,32 @@ export class Daredevil extends Phaser.GameObjects.Container {
     const body = this.body as Phaser.Physics.Arcade.Body
     body.setVelocityX(-200)
 
-    const introIsEnding = this.daredevil.anims.getProgress() == 1
-    if(introIsEnding){
+    if(this.introIsEnding){
       this.setRadarSenseEnableTo(false)
       body.setVelocityX(50)
       this.jump(this.getCrouchDirection())
     }
   }
 
+  private introIsEnding() {
+    return this.daredevil.anims.getProgress() == 1
+  }
+
   private daredevilStand() {
-    if(this.Gamepad.connected)
+    if(this.Gamepad.connected){
       this.activeGamepadInputs()
+      this.touchAndKeyboardIsActive = false
+    }
       
-    else {
+    else if(this.touchAndKeyboardIsNotActiveAndGamepadIsDisconnected()){
       this.activeKeyboardInputs()
       this.activeTouchInputs()
+      this.touchAndKeyboardIsActive = true
     }
+  }
+
+  private touchAndKeyboardIsNotActiveAndGamepadIsDisconnected() {
+    return this.touchAndKeyboardIsActive != true && this.Gamepad.connected == false
   }
 
   private daredevilFall() {
@@ -181,20 +192,28 @@ export class Daredevil extends Phaser.GameObjects.Container {
 
       else if(this.Gamepad.getKey('leftstick_x') >= 0.25)
         callbacks.daredevilToRight()
-      
-      else
-        callbacks.daredevilStopMove()
     })
 
     this.Gamepad.addListener('press', 'l1', () => this.guard())
     this.Gamepad.addListener('press', 'r1', () => this.radarModeOn())
 
-
-    if(this.Gamepad.getKey('dleft') == 0 || this.Gamepad.getKey('dright') == 0 || this.Gamepad.getKey('l1') == 0)
+    if(this.isMovementStop())
       callbacks.daredevilStopMove()
     
-    if(this.Gamepad.getKey('r1') == 0)
+    if(this.chargeIsNotActive)
       this.radarModeOff()
+  }
+
+  isMovementStop(){
+    const dpadsIsNotPressed = this.Gamepad.getKey('dleft') == 0 && this.Gamepad.getKey('dright') == 0
+    const leftsticksXIsNotChanged = this.Gamepad.getKey('leftstick_x') < 0.25 && this.Gamepad.getKey('leftstick_x') > -0.25
+    const guardIsNotActive = this.Gamepad.getKey('l1') == 0
+
+    return dpadsIsNotPressed && leftsticksXIsNotChanged && guardIsNotActive
+  }
+
+  chargeIsNotActive(){
+    return this.Gamepad.getKey('r1') == 0
   }
 
   private daredevilCrouch() {
@@ -260,17 +279,19 @@ export class Daredevil extends Phaser.GameObjects.Container {
   }
 
   private jump(crouch: AnimationKeys.DaredevilCrouchLeft | AnimationKeys.DaredevilCrouchRight){
-    this.daredevil.play(crouch, true)
-
     const body = this.body as Phaser.Physics.Arcade.Body
 
-    const jump = this.getJumpDirection()
-    this.daredevilState = CharacterState.Jump
+    if(body.blocked.down){
+      this.daredevil.play(crouch, true)
 
-    body.setAccelerationY(-400)
-    this.daredevil.play(jump, true)
+      const jump = this.getJumpDirection()
+      this.daredevilState = CharacterState.Jump
 
-    setTimeout(() => body.setAccelerationY(0), 1000)
+      body.setAccelerationY(-350)
+      this.daredevil.play(jump, true)
+
+      setTimeout(() => body.setAccelerationY(0), 1000)
+    }
   }
 
   private guard() {
