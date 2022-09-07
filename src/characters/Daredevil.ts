@@ -18,14 +18,19 @@ export class Daredevil extends Phaser.GameObjects.Container {
 
   private touchAndKeyboardIsActive = false
   private Keyboard!: Phaser.Input.Keyboard.KeyboardPlugin
-  private touchGamepad!: Phaser.GameObjects.DOMElement
   private Gamepad!: Gamepad
+
+  private qButton!: Phaser.GameObjects.Image
+  private eButton!: Phaser.GameObjects.Image
+  private wButton!: Phaser.GameObjects.Image
+  private aButton!: Phaser.GameObjects.Image
+  private sButton!: Phaser.GameObjects.Image
+  private dButton!: Phaser.GameObjects.Image
 
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
-    touchGamepad: Phaser.GameObjects.DOMElement,
     gamepad: Gamepad
   ){
 		super(scene, x, y)
@@ -49,21 +54,70 @@ export class Daredevil extends Phaser.GameObjects.Container {
     this.add(this.daredevil)
 
     this.Keyboard = scene.input.keyboard
-    this.touchGamepad = touchGamepad
     this.Gamepad = gamepad
-
+    
     scene.physics.add.existing(this)
 	}
 
+  public createScreenButtons(scene: Phaser.Scene, touchButtonsVisible: boolean) {
+    this.qButton = scene.add.image(
+      10, 160,
+      TextureKeys.Q_Button
+    )
+    .setOrigin(0, 0)
+    .setScale(0.5)
+    .setInteractive()
+    .setVisible(touchButtonsVisible)
+    
+    this.eButton = scene.add.image(
+      170, 160,
+      TextureKeys.E_Button
+    )
+    .setOrigin(0, 0)
+    .setScale(0.5)
+    .setInteractive()
+    .setVisible(touchButtonsVisible)
+
+    this.wButton = scene.add.image(
+      90, 240,
+      TextureKeys.W_Button
+    )
+    .setOrigin(0, 0)
+    .setScale(0.5)
+    .setInteractive()
+    .setVisible(touchButtonsVisible)
+    
+    this.aButton = scene.add.image(
+      10, 320,
+      TextureKeys.A_Button
+    )
+    .setOrigin(0, 0)
+    .setScale(0.5)
+    .setInteractive()
+    .setVisible(touchButtonsVisible)
+    
+    this.sButton = scene.add.image(
+      90, 320,
+      TextureKeys.S_Button
+    )
+    .setOrigin(0, 0)
+    .setScale(0.5)
+    .setInteractive()
+    .setVisible(touchButtonsVisible)
+    
+    this.dButton = scene.add.image(
+      170, 320,
+      TextureKeys.D_Button
+    )
+    .setOrigin(0, 0)
+    .setScale(0.5)
+    .setInteractive()
+    .setVisible(touchButtonsVisible)
+  }
+
 	preUpdate(){
-    if(this.scene.scale.isFullscreen){
-      this.daredevil.setScale(2.8, 2.7)
-      this.radarSense.setScale(2.8, 2.7)
-    }
-    else {
-      this.daredevil.setScale(1.8, 1.7)
-      this.radarSense.setScale(1.8, 1.7)
-    }
+    this.resizeDaredevil()
+    this.resizeScreenButtons()
 
     switch (this.daredevilState) {
       case CharacterState.Intro:
@@ -89,6 +143,83 @@ export class Daredevil extends Phaser.GameObjects.Container {
       default:
         break;
     }
+  }
+  
+  private resizeDaredevil() {
+    const action = this.scene.scale.isFullscreen ?
+      () => {
+        this.daredevil.setScale(2.8, 2.7)
+        this.radarSense.setScale(2.8, 2.7)
+      }:
+      () => {
+        this.daredevil.setScale(1.8, 1.7)
+        this.radarSense.setScale(1.8, 1.7)
+      }
+    
+    action()
+  }
+
+  private resizeScreenButtons() {
+    if(
+      this.isNotADesktopDeviceOnFullscreen() ||
+      this.isADesktopDeviceOrAMobileDeviceInLandscapeOrientation()
+    ){
+      this.qButton
+      .setPosition(10, 160)
+      .setScale(0.5)
+      this.eButton
+      .setPosition(170, 160)
+      .setScale(0.5)
+
+      this.wButton
+      .setPosition(90, 240)
+      .setScale(0.5)
+      this.aButton
+      .setPosition(10, 320)
+      .setScale(0.5)
+      this.sButton
+      .setPosition(90, 320)
+      .setScale(0.5)
+      this.dButton
+      .setPosition(170, 320)
+      .setScale(0.5)
+    }
+    else {
+      this.qButton
+      .setPosition(10, 140)
+      .setScale(0.25)
+      this.eButton
+      .setPosition(90, 140)
+      .setScale(0.25)
+
+      this.wButton
+      .setPosition(50, 180)
+      .setScale(0.25)
+      this.aButton
+      .setPosition(10, 220)
+      .setScale(0.25)
+      this.sButton
+      .setPosition(50, 220)
+      .setScale(0.25)
+      this.dButton
+      .setPosition(90, 220)
+      .setScale(0.25)
+    }
+  }
+
+  public isADesktopDeviceOrAMobileDeviceInLandscapeOrientation() {
+    let scaleOrientation: unknown = this.scene.scale.orientation
+    let orientation = scaleOrientation as string
+
+    return this.scene.game.device.os.desktop || orientation == 'landscape-primary'
+  }
+
+  public isNotADesktopDeviceOnFullscreen() {
+    return this.scene.scale.isFullscreen && this.isNotADesktopDevice()
+  }
+
+  public isNotADesktopDevice() {
+    return !this.scene.game.device.os.desktop
   }
 
   private daredevilIntro() {
@@ -151,28 +282,19 @@ export class Daredevil extends Phaser.GameObjects.Container {
 
   private activeTouchInputs() {
     const callbacks = this.getActionsCallbacks()
+
+    this.wButton.addListener('pointerdown', callbacks.daredevilJump)
+    this.aButton.addListener('pointerdown', callbacks.daredevilToLeft)
+    this.dButton.addListener('pointerdown', callbacks.daredevilToRight)
     
-    this.touchGamepad.getChildByID('top')
-    .addEventListener('pointerdown', callbacks.daredevilJump)
-    this.touchGamepad.getChildByID('left')
-    .addEventListener('pointerdown', callbacks.daredevilToLeft)
-    this.touchGamepad.getChildByID('right')
-    .addEventListener('pointerdown', callbacks.daredevilToRight)
+    this.aButton.addListener('pointerup', callbacks.daredevilStopMove)
+    this.dButton.addListener('pointerup', callbacks.daredevilStopMove)
     
-    this.touchGamepad.getChildByID('left')
-    .addEventListener('pointerup', callbacks.daredevilStopMove)
-    this.touchGamepad.getChildByID('right')
-    .addEventListener('pointerup', callbacks.daredevilStopMove)
+    this.qButton.addListener('pointerdown', () => this.guard())
+    this.eButton.addListener('pointerdown', () => this.radarModeOn())
     
-    this.touchGamepad.getChildByID('guard')
-    .addEventListener('pointerdown', () => this.guard())
-    this.touchGamepad.getChildByID('charge')
-    .addEventListener('pointerdown', () => this.radarModeOn())
-    
-    this.touchGamepad.getChildByID('guard')
-    .addEventListener('pointerup', callbacks.daredevilStopMove)
-    this.touchGamepad.getChildByID('charge')
-    .addEventListener('pointerup', () => this.radarModeOff())
+    this.qButton.addListener('pointerup', callbacks.daredevilStopMove)
+    this.eButton.addListener('pointerup', () => this.radarModeOff())
   }
 
   private activeGamepadInputs(){
@@ -366,7 +488,7 @@ export class Daredevil extends Phaser.GameObjects.Container {
       this.daredevil.play(this.getJumpDirection(), true)
   }
 
-	public setRadarSenseEnableTo(enable: boolean){
+	private setRadarSenseEnableTo(enable: boolean){
     this.radarSense.setVisible(enable)
   }
 }

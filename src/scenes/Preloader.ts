@@ -30,6 +30,36 @@ export class Preloader extends Phaser.Scene {
       TextureKeys.TouchGamepad,
       '../assets/html/touchKeyboard.html'
     )
+
+    this.load.image(
+      TextureKeys.Q_Button,
+      '/assets/buttons/q-icon.svg'
+    )
+
+    this.load.image(
+      TextureKeys.E_Button,
+      '/assets/buttons/e-icon.svg'
+    )
+
+    this.load.image(
+      TextureKeys.W_Button,
+      '/assets/buttons/w-icon.svg'
+    )
+
+    this.load.image(
+      TextureKeys.A_Button,
+      '/assets/buttons/a-icon.svg'
+    )
+
+    this.load.image(
+      TextureKeys.S_Button,
+      '/assets/buttons/s-icon.svg'
+    )
+
+    this.load.image(
+      TextureKeys.D_Button,
+      '/assets/buttons/d-icon.svg'
+    )
   }
 
   create(){

@@ -13,12 +13,10 @@ enum Fullscreen {
 }
 
 export class GameScene extends Phaser.Scene {
-  private deviceWidth = window.screen.width
   private FullscreenState = Fullscreen.Disabled
   private fullscreenButton!: Phaser.GameObjects.DOMElement
   private Background!: Phaser.GameObjects.Image
   private daredevil!: Daredevil
-  private touchGamepad!: Phaser.GameObjects.DOMElement
   private Gamepad1 = new Gamepad()
 
   constructor(){
@@ -59,25 +57,19 @@ export class GameScene extends Phaser.Scene {
     .createFromCache(TextureKeys.FullscreenButton)
     .getChildByID('fullscreen-button')
     .addEventListener('click', () => this.toggleFullscreen())
-
-    this.touchGamepad = this.add.dom(10, 10)
-    .setOrigin(0, 0)
-    .createFromCache(TextureKeys.TouchGamepad)
-
-    if(this.deviceWidth > 800)
-      this.touchGamepad.setVisible(false)
-    
+      
     this.daredevil = new Daredevil(
       this,
       width * 0.1,
       height - 50,
-      this.touchGamepad,
       this.Gamepad1
     )
+
     const body = this.daredevil.body as Phaser.Physics.Arcade.Body
     body.setCollideWorldBounds(true)
     
     this.add.existing(this.daredevil)
+    this.daredevil.createScreenButtons(this, !this.game.device.os.desktop)
   }
 
   showGamepadMessage(message: string){
@@ -116,33 +108,29 @@ export class GameScene extends Phaser.Scene {
       document.getElementById('game-container').requestFullscreen()
       this.FullscreenState = Fullscreen.Active
     }
-
-    else if(this.FullscreenState == Fullscreen.Active){
+    else {
       document.exitFullscreen()
       this.FullscreenState = Fullscreen.Disabled
     }
   }
 
   private resizeGame() {
-    let orientation: unknown = this.scale.orientation
-    orientation = orientation as string
-    
-    if(this.scale.isFullscreen && this.deviceWidth >= 800){
+    if(this.isADesktopDeviceOnFullscreen()){
       this.Background.setScale(1.8, 1.7)
       this.game.scale.resize(1.8, 1.7)
     }
 
-    else if(this.deviceWidth >= 800 || orientation == 'landscape-primary'){
+    else if(this.isADesktopDeviceOrAMobileDeviceInLandscapeOrientation()){
       this.Background.setScale(1.2, 1)
       this.game.scale.resize(1.2, 1)
     }
 
-    else if(this.scale.isFullscreen && this.deviceWidth < 800){
+    else if(this.isNotADesktopDeviceOnFullscreen()){
       this.Background.setScale(1.2, 1)
       this.game.scale.resize(1.2, 1)
     }
 
-    else if(this.deviceWidth < 800){
+    else if(this.isNotADesktopDevice()){
       this.Background.setScale(0.6, 0.6)
       this.game.scale.resize(0.6, 0.6)
     }
@@ -158,5 +146,24 @@ export class GameScene extends Phaser.Scene {
       this.game.scale.width,
       this.game.scale.height
     )
+  }
+
+  public isADesktopDeviceOnFullscreen() {
+    return this.scale.isFullscreen && this.game.device.os.desktop
+  }
+
+  public isADesktopDeviceOrAMobileDeviceInLandscapeOrientation() {
+    let scaleOrientation: unknown = this.scale.orientation
+    let orientation = scaleOrientation as string
+
+    return this.game.device.os.desktop || orientation == 'landscape-primary'
+  }
+
+  public isNotADesktopDeviceOnFullscreen() {
+    return this.scale.isFullscreen && this.isNotADesktopDevice()
+  }
+
+  public isNotADesktopDevice() {
+    return !this.game.device.os.desktop
   }
 }
