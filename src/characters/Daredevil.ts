@@ -20,6 +20,7 @@ export class Daredevil extends Phaser.GameObjects.Container {
   private Keyboard!: Phaser.Input.Keyboard.KeyboardPlugin
   private Gamepad!: Gamepad
 
+  private ScreenButtons!: Phaser.GameObjects.Image[]
   private qButton!: Phaser.GameObjects.Image
   private eButton!: Phaser.GameObjects.Image
   private wButton!: Phaser.GameObjects.Image
@@ -27,27 +28,17 @@ export class Daredevil extends Phaser.GameObjects.Container {
   private sButton!: Phaser.GameObjects.Image
   private dButton!: Phaser.GameObjects.Image
 
-  constructor(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    gamepad: Gamepad
-  ){
+  constructor(scene: Phaser.Scene, x: number, y: number, gamepad: Gamepad){
 		super(scene, x, y)
     
-    this.radarSense = scene.add.sprite(
-      0, -25,
-      TextureKeys.Daredevil
-    )
+    this.radarSense = scene.add.sprite(0, -25, TextureKeys.Daredevil)
     .setScale(1.8, 1.7)
     .play(AnimationKeys.DaredevilRadarSense)
 
-    this.daredevil = scene.add.sprite(
-      0, 0,
-      TextureKeys.Daredevil
-    )
+    this.daredevil = scene.add.sprite(0, 0, TextureKeys.Daredevil)
     .setScale(1.8, 1.7)
     .play(AnimationKeys.DaredevilIntro)
+
     this.daredevilState = CharacterState.Intro
     
     this.add(this.radarSense)
@@ -60,59 +51,29 @@ export class Daredevil extends Phaser.GameObjects.Container {
 	}
 
   public createScreenButtons(scene: Phaser.Scene, touchButtonsVisible: boolean) {
-    this.qButton = scene.add.image(
-      10, 160,
-      TextureKeys.Q_Button
-    )
-    .setOrigin(0, 0)
-    .setScale(0.5)
-    .setInteractive()
-    .setVisible(touchButtonsVisible)
-    
-    this.eButton = scene.add.image(
-      170, 160,
-      TextureKeys.E_Button
-    )
-    .setOrigin(0, 0)
-    .setScale(0.5)
-    .setInteractive()
-    .setVisible(touchButtonsVisible)
+    this.qButton = scene.add.image(310, 160, TextureKeys.Q_Button)
+    this.eButton = scene.add.image(470, 160, TextureKeys.E_Button)
+    this.wButton = scene.add.image(90, 240, TextureKeys.W_Button)
+    this.aButton = scene.add.image(10, 320, TextureKeys.A_Button)
+    this.sButton = scene.add.image(90, 320, TextureKeys.S_Button)
+    this.dButton = scene.add.image(170, 320, TextureKeys.D_Button)
 
-    this.wButton = scene.add.image(
-      90, 240,
-      TextureKeys.W_Button
-    )
-    .setOrigin(0, 0)
-    .setScale(0.5)
-    .setInteractive()
-    .setVisible(touchButtonsVisible)
-    
-    this.aButton = scene.add.image(
-      10, 320,
-      TextureKeys.A_Button
-    )
-    .setOrigin(0, 0)
-    .setScale(0.5)
-    .setInteractive()
-    .setVisible(touchButtonsVisible)
-    
-    this.sButton = scene.add.image(
-      90, 320,
-      TextureKeys.S_Button
-    )
-    .setOrigin(0, 0)
-    .setScale(0.5)
-    .setInteractive()
-    .setVisible(touchButtonsVisible)
-    
-    this.dButton = scene.add.image(
-      170, 320,
-      TextureKeys.D_Button
-    )
-    .setOrigin(0, 0)
-    .setScale(0.5)
-    .setInteractive()
-    .setVisible(touchButtonsVisible)
+    this.ScreenButtons = [
+      this.qButton,
+      this.eButton,
+      this.wButton,
+      this.aButton,
+      this.sButton,
+      this.dButton
+    ]
+
+    for (const button of this.ScreenButtons) {
+      button
+      .setOrigin(0, 0)
+      .setScale(0.5)
+      .setInteractive()
+      .setVisible(touchButtonsVisible)
+    }
   }
 
 	preUpdate(){
@@ -120,28 +81,22 @@ export class Daredevil extends Phaser.GameObjects.Container {
     this.resizeScreenButtons()
 
     switch (this.daredevilState) {
-      case CharacterState.Intro:
-        this.daredevilIntro()
+      case CharacterState.Intro: this.daredevilIntro()
         break;
 
-      case CharacterState.Stand:
-        this.daredevilStand()
+      case CharacterState.Stand: this.daredevilStand()
         break;
       
-      case CharacterState.Jump:
-        this.checkIfHaveReachedHaximumHeight()
+      case CharacterState.Jump: this.checkIfHaveReachedHaximumHeight()
         break;
       
-      case CharacterState.Fall:
-        this.daredevilFall()
+      case CharacterState.Fall: this.daredevilFall()
         break;
 
-      case CharacterState.Crouch:
-        this.daredevilCrouch()
+      case CharacterState.Crouch: this.daredevilCrouch()
         break;
     
-      default:
-        break;
+      default: break;
     }
   }
   
@@ -160,65 +115,51 @@ export class Daredevil extends Phaser.GameObjects.Container {
   }
 
   private resizeScreenButtons() {
-    if(
-      this.isNotADesktopDeviceOnFullscreen() ||
-      this.isADesktopDeviceOrAMobileDeviceInLandscapeOrientation()
-    ){
-      this.qButton
-      .setPosition(10, 160)
-      .setScale(0.5)
-      this.eButton
-      .setPosition(170, 160)
-      .setScale(0.5)
+    if(this.isBigScreenSize()){
+      this.qButton.setPosition(720, 240)
+      this.eButton.setPosition(800, 320)
+      
+      this.wButton.setPosition(90, 240)
+      this.aButton.setPosition(10, 320)
+      this.sButton.setPosition(90, 320)
+      this.dButton.setPosition(170, 320)
 
-      this.wButton
-      .setPosition(90, 240)
-      .setScale(0.5)
-      this.aButton
-      .setPosition(10, 320)
-      .setScale(0.5)
-      this.sButton
-      .setPosition(90, 320)
-      .setScale(0.5)
-      this.dButton
-      .setPosition(170, 320)
-      .setScale(0.5)
+      for (const button of this.ScreenButtons)
+        button.setScale(0.5)
     }
     else {
-      this.qButton
-      .setPosition(10, 140)
-      .setScale(0.25)
-      this.eButton
-      .setPosition(90, 140)
-      .setScale(0.25)
+      this.qButton.setPosition(320, 180)
+      this.eButton.setPosition(360, 220)
 
-      this.wButton
-      .setPosition(50, 180)
-      .setScale(0.25)
-      this.aButton
-      .setPosition(10, 220)
-      .setScale(0.25)
-      this.sButton
-      .setPosition(50, 220)
-      .setScale(0.25)
-      this.dButton
-      .setPosition(90, 220)
-      .setScale(0.25)
+      this.wButton.setPosition(50, 180)
+      this.aButton.setPosition(10, 220)
+      this.sButton.setPosition(50, 220)
+      this.dButton.setPosition(90, 220)
+
+      for (const button of this.ScreenButtons)
+        button.setScale(0.25)
     }
   }
 
-  public isADesktopDeviceOrAMobileDeviceInLandscapeOrientation() {
+  private isBigScreenSize() {
+    return (
+      this.isNotADesktopDeviceOnFullscreen() ||
+      this.isADesktopDeviceOrAMobileDeviceInLandscapeOrientation()
+    )
+  }
+
+  private isADesktopDeviceOrAMobileDeviceInLandscapeOrientation() {
     let scaleOrientation: unknown = this.scene.scale.orientation
     let orientation = scaleOrientation as string
 
     return this.scene.game.device.os.desktop || orientation == 'landscape-primary'
   }
 
-  public isNotADesktopDeviceOnFullscreen() {
+  private isNotADesktopDeviceOnFullscreen() {
     return this.scene.scale.isFullscreen && this.isNotADesktopDevice()
   }
 
-  public isNotADesktopDevice() {
+  private isNotADesktopDevice() {
     return !this.scene.game.device.os.desktop
   }
 
@@ -326,7 +267,7 @@ export class Daredevil extends Phaser.GameObjects.Container {
       this.radarModeOff()
   }
 
-  isMovementStop(){
+  private isMovementStop(){
     const dpadsIsNotPressed = this.Gamepad.getKey('dleft') == 0 && this.Gamepad.getKey('dright') == 0
     const leftsticksXIsNotChanged = this.Gamepad.getKey('leftstick_x') < 0.25 && this.Gamepad.getKey('leftstick_x') > -0.25
     const guardIsNotActive = this.Gamepad.getKey('l1') == 0
@@ -334,7 +275,7 @@ export class Daredevil extends Phaser.GameObjects.Container {
     return dpadsIsNotPressed && leftsticksXIsNotChanged && guardIsNotActive
   }
 
-  chargeIsNotActive(){
+  private chargeIsNotActive(){
     return this.Gamepad.getKey('r1') == 0
   }
 
