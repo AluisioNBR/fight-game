@@ -14,7 +14,7 @@ enum Fullscreen {
 
 export class GameScene extends Phaser.Scene {
   private FullscreenState = Fullscreen.Disabled
-  private fullscreenButton!: Phaser.GameObjects.DOMElement
+  private fullscreenButton!: Phaser.GameObjects.Image
   private Background!: Phaser.GameObjects.Image
   private daredevil!: Daredevil
   private Gamepad1 = new Gamepad()
@@ -52,11 +52,14 @@ export class GameScene extends Phaser.Scene {
 
     this.Gamepad1.addListener('press', 'select', () => this.toggleFullscreen())
 
-    this.fullscreenButton = this.add.dom(this.Background.width - 10, 10)
+    this.fullscreenButton = this.add.image(
+      this.Background.width - 50, 50,
+      TextureKeys.FullscreenButton
+    )
     this.fullscreenButton
-    .createFromCache(TextureKeys.FullscreenButton)
-    .getChildByID('fullscreen-button')
-    .addEventListener('click', () => this.toggleFullscreen())
+    .setScale(0.35)
+    .setInteractive()
+    .addListener('pointerdown', () => this.toggleFullscreen())
       
     this.daredevil = new Daredevil(
       this,
@@ -120,12 +123,10 @@ export class GameScene extends Phaser.Scene {
       this.game.scale.resize(1.8, 1.7)
     }
 
-    else if(this.isADesktopDeviceOrAMobileDeviceInLandscapeOrientation()){
-      this.Background.setScale(1.2, 1)
-      this.game.scale.resize(1.2, 1)
-    }
-
-    else if(this.isNotADesktopDeviceOnFullscreen()){
+    else if(
+      this.isADesktopDeviceOrAMobileDeviceInLandscapeOrientation() ||
+      this.isNotADesktopDeviceOnFullscreen()
+    ){
       this.Background.setScale(1.2, 1)
       this.game.scale.resize(1.2, 1)
     }

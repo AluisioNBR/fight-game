@@ -21,14 +21,9 @@ export class Preloader extends Phaser.Scene {
       '../assets/characters/daredevil.json'
     )
 
-    this.load.html(
+    this.load.image(
       TextureKeys.FullscreenButton,
-      '../assets/html/fullscreenButton.html'
-    )
-
-    this.load.html(
-      TextureKeys.TouchGamepad,
-      '../assets/html/touchKeyboard.html'
+      '/assets/buttons/fullscreen-icon.svg'
     )
 
     this.load.image(
@@ -94,7 +89,7 @@ export class Preloader extends Phaser.Scene {
       }),
       delay: 0,
       duration: 2000,
-      frameRate: 10,
+      frameRate: 5,
       repeat: -1
     })
 
@@ -109,7 +104,7 @@ export class Preloader extends Phaser.Scene {
       }),
       delay: 0,
       duration: 2000,
-      frameRate: 10,
+      frameRate: 5,
       repeat: -1
     })
 

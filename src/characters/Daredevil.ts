@@ -339,7 +339,9 @@ export class Daredevil extends Phaser.GameObjects.Container {
   }
 
   private daredevilCrouch() {
+    const body = this.body as Phaser.Physics.Arcade.Body
     setTimeout(() => {
+      body.setVelocityY(0)
       this.daredevil.play(this.getStandDirection(), true)
       this.daredevilState = CharacterState.Stand
     }, 250)
@@ -349,14 +351,14 @@ export class Daredevil extends Phaser.GameObjects.Container {
     const daredevilJump = () => this.jump(this.getCrouchDirection())
     const daredevilToLeft = () => {
       this.move(
-        -400,
+        -500,
         CharacterDirection.Left,
         AnimationKeys.DaredevilRunLeft
       )
     }
     const daredevilToRight = () => {
       this.move(
-        400,
+        500,
         CharacterDirection.Right,
         AnimationKeys.DaredevilRunRight
       )
@@ -409,10 +411,12 @@ export class Daredevil extends Phaser.GameObjects.Container {
       const jump = this.getJumpDirection()
       this.daredevilState = CharacterState.Jump
 
-      body.setAccelerationY(-350)
+      body.setVelocityY(-450)
       this.daredevil.play(jump, true)
 
-      setTimeout(() => body.setAccelerationY(0), 1000)
+      setTimeout(() => {
+        body.setVelocityY(300)
+      }, 600)
     }
   }
 
