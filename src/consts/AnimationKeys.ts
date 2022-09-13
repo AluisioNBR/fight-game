@@ -26,6 +26,11 @@ export enum AnimationKeys {
 	DaredevilJumpGuardActiveLeft = 'daredevil-jump-guard-active-left',
 	DaredevilJumpGuardActiveRight = 'daredevil-jump-guard-active-right',
 
+	DaredevilXHitLeft = 'daredevil-xbutton-hit-left',
+	DaredevilXHitRight = 'daredevil-xbutton-hit-right',
+	DaredevilJumpXHitLeft = 'daredevil-jump-xbutton-hit-left',
+	DaredevilJumpXHitRight = 'daredevil-jump-xbutton-hit-right',
+
 	DaredevilRadarmodeOnLeft = 'daredevil-radarmode-on-left',
 	DaredevilRadarmodeOnRight = 'daredevil-radarmode-on-right',
 

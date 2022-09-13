@@ -7,6 +7,8 @@ export enum TextureKeys {
 	D_Button = 'd-button',
 	Q_Button = 'q-button',
 	E_Button = 'e-button',
+
+	J_Button = 'j-button',
 	
 	Daredevil = 'daredevil',
 }

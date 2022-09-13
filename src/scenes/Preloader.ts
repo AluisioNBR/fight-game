@@ -55,6 +55,11 @@ export class Preloader extends Phaser.Scene {
       TextureKeys.D_Button,
       '/assets/buttons/d-icon.svg'
     )
+
+    this.load.image(
+      TextureKeys.J_Button,
+      '/assets/buttons/j-icon.svg'
+    )
   }
 
   create(){
@@ -246,6 +251,58 @@ export class Preloader extends Phaser.Scene {
 				key: TextureKeys.Daredevil,
 				frame: 'right_jump_guard_active.png'
 			}]
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilXHitLeft,
+      frames: this.anims.generateFrameNames(TextureKeys.Daredevil, {
+        start: 0,
+        end: 2,
+        prefix: 'left_xhit_',
+        zeroPad: 2,
+        suffix: '.png'
+      }),
+      duration: 200,
+      frameRate: 20
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilXHitRight,
+      frames: this.anims.generateFrameNames(TextureKeys.Daredevil, {
+        start: 0,
+        end: 2,
+        prefix: 'right_xhit_',
+        zeroPad: 2,
+        suffix: '.png'
+      }),
+      duration: 200,
+      frameRate: 20
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilJumpXHitLeft,
+      frames: this.anims.generateFrameNames(TextureKeys.Daredevil, {
+        start: 0,
+        end: 1,
+        prefix: 'left_jump_xhit_',
+        zeroPad: 2,
+        suffix: '.png'
+      }),
+      duration: 200,
+      frameRate: 20
+    })
+
+    this.anims.create({
+      key: AnimationKeys.DaredevilJumpXHitRight,
+      frames: this.anims.generateFrameNames(TextureKeys.Daredevil, {
+        start: 0,
+        end: 1,
+        prefix: 'right_jump_xhit_',
+        zeroPad: 2,
+        suffix: '.png'
+      }),
+      duration: 200,
+      frameRate: 20
     })
 
     this.anims.create({
